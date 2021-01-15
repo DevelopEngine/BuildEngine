@@ -25,7 +25,8 @@ jobs:
         with:
           target: Default
           cake-bootstrap: true
-          verbosity: Verbose
+          verbosity: Diagnostic
+          cake-version: 1.0.0-rc0002
         env:
           NUGET_TOKEN: ${{secrets.NUGET_TOKEN}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
