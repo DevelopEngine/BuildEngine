@@ -37,7 +37,7 @@ namespace BuildEngine {
             var targetPath = new DirectoryInfo(Path.Combine(Path.GetTempPath(), sourceId, contextName ?? buildId.ToString()));
             targetPath.Create();
             var scriptContext = await _scriptService?.GetScriptContext(targetPath.FullName);
-            return new BuildContext(scriptContext, targetPath, _logger);
+            return new BuildContext(scriptContext, targetPath, buildId.ToString(), _logger);
         }
     }
 }

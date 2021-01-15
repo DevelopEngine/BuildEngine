@@ -7,26 +7,26 @@ using Microsoft.Extensions.Logging;
 namespace BuildEngine {
     public class BuildContext : IDisposable
     {
-        private readonly DirectoryInfo _workingDirectory;
+        public readonly DirectoryInfo WorkingDirectory;
         private readonly ILogger _logger;
         public readonly BuildScript BuildScript;
 
-        internal BuildContext(BuildScript ctx, DirectoryInfo targetPath, ILogger logger)
+        internal BuildContext(BuildScript ctx, DirectoryInfo targetPath, string buildId, ILogger logger)
         {
             var path = targetPath;
-            _workingDirectory = targetPath;
+            WorkingDirectory = targetPath;
             _logger = logger;
             BuildScript = ctx;
         }
 
         public bool AddFolder(string relPath, DirectoryInfo sourceDir, string fileFilter = "*") {
-            var targetPath = Path.Combine(_workingDirectory.FullName, relPath);
+            var targetPath = Path.Combine(WorkingDirectory.FullName, relPath);
             sourceDir.CopyTo(targetPath, fileFilter);
             return Directory.Exists(targetPath);
         }
 
         public bool AddFile(string relPath, FileInfo sourceFile) {
-            var targetPath = Path.Combine(_workingDirectory.FullName, relPath);
+            var targetPath = Path.Combine(WorkingDirectory.FullName, relPath);
             var targetFilePath = Path.Combine(targetPath, sourceFile.Name);
             if (!Directory.Exists(targetPath)) {
                 Directory.CreateDirectory(targetPath);
@@ -36,13 +36,13 @@ namespace BuildEngine {
         }
 
         public bool AddFolder(string relPath, DirectoryInfo sourceDir, Func<FileInfo, bool> fileFilter) {
-            var targetPath = Path.Combine(_workingDirectory.FullName, relPath);
+            var targetPath = Path.Combine(WorkingDirectory.FullName, relPath);
             sourceDir.CopyTo(targetPath, fileFilter);
             return Directory.Exists(targetPath);
         }
 
         public bool LinkFolder(string relPath, DirectoryInfo sourceDir) {
-            var linkPath = Path.Combine(_workingDirectory.FullName, relPath);
+            var linkPath = Path.Combine(WorkingDirectory.FullName, relPath);
             Directory.CreateDirectory(Path.GetDirectoryName(linkPath));
             // var result = CreateSymbolicLink(linkPath, sourceDir.FullName, SymbolicLink.Directory);
             var result = CreateLink(new DirectoryInfo(linkPath), sourceDir.FullName);
@@ -63,7 +63,7 @@ namespace BuildEngine {
 
         public void Dispose() {
             BuildScript?.Dispose();
-            _workingDirectory.Delete(true);
+            WorkingDirectory.Delete(true);
         }
     }
 }
