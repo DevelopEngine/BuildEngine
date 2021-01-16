@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using BuildEngine.Scripts;
 using ExecEngine;
@@ -11,7 +12,7 @@ namespace BuildEngine {
         private readonly ILogger _logger;
         public readonly BuildScript BuildScript;
 
-        internal BuildContext(BuildScript ctx, DirectoryInfo targetPath, string buildId, ILogger logger)
+        internal BuildContext([AllowNull]BuildScript ctx, DirectoryInfo targetPath, string buildId, ILogger logger)
         {
             var path = targetPath;
             WorkingDirectory = targetPath;

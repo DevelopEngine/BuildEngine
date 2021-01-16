@@ -29,15 +29,20 @@ namespace BuildEngine {
             _scriptService = scriptService;
         }
         
-        public async Task<BuildContext> Create(string contextName) {
+        public async Task<BuildContext> Create([AllowNull]string contextName) {
             var buildId = Guid.NewGuid();
             var sourceId = _infoProvider != null
                 ? _infoProvider.GetAppInfo().Name
                 : $"build-{buildId:N}";
             var targetPath = new DirectoryInfo(Path.Combine(Path.GetTempPath(), sourceId, contextName ?? buildId.ToString()));
             targetPath.Create();
-            var scriptContext = await _scriptService?.GetScriptContext(targetPath.FullName);
-            return new BuildContext(scriptContext, targetPath, buildId.ToString(), _logger);
+            
+            if (_scriptService != null) {
+                var scriptContext = await _scriptService?.GetScriptContext(targetPath.FullName);
+                return new BuildContext(scriptContext, targetPath, buildId.ToString(), _logger);
+            }
+            return new BuildContext(null, targetPath, buildId.ToString(), _logger);
+            
         }
     }
 }

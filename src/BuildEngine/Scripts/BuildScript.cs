@@ -20,6 +20,7 @@ namespace BuildEngine.Scripts {
             File.Delete(_tempPath.FullName);
         }
         
-        public abstract (bool Success, FileInfo Output) RunBuild(string targetFileName);
+        // public abstract (bool Success, FileInfo Output) RunBuild(string targetFileName);
+        public abstract (bool Success, FileSystemInfo Output) RunBuild(string targetFileName);
     }
 }

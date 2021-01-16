@@ -30,7 +30,15 @@ namespace BuildEngine.Builder {
                 if (buildResult.Success) {
                     _logger.LogInformation($"[bold green]Success![/] Files for {objName} successfully packed from {targets.Sum(t => t.SourceFiles.Count)} files (in {targets.Count} targets)");
                     var tempFile = Path.GetTempFileName();
-                    buildResult.Output.CopyTo(tempFile, true);
+                    switch (buildResult.Output)
+                    {
+                        case FileInfo fileInfo:
+                            fileInfo.CopyTo(tempFile, true);
+                            break;
+                        case DirectoryInfo dirInfo:
+                            System.IO.Compression.ZipFile.CreateFromDirectory(dirInfo.FullName, tempFile);
+                            break;
+                    }
                     return new FileInfo(tempFile);
                 } else {
                     _logger.LogInformation($"[bold white on red]Failed![/] Files from {Directory.GetParent(contextTargets.First().SourceGroup)} not packed successfully. Continuing...");
