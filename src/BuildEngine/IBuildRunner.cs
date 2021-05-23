@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
-using BuildEngine.Scripts;
 
 namespace BuildEngine {
-    public interface IBuildRunner {
-        public (bool Success, FileInfo Output) RunBuild(BuildScript script, string targetFileName);
+    
+    public interface IBuildRunner : IDisposable {
+        public (bool Success, FileSystemInfo Output) RunBuild(string targetFileName);
+        //public string? WorkingDirectory { get; }
     }
 }

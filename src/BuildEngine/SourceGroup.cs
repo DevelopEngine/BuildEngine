@@ -1,7 +1,5 @@
 ﻿namespace BuildEngine {
     public class SourceGroup {
-        public SourceGroup() { }
-
         public SourceGroup(string raw) {
             RawValue = raw;
         }
@@ -11,16 +9,14 @@
         }
         
         public string RawValue { get; private set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         
         public static implicit operator string(SourceGroup sg) {
             return sg.RawValue;
         }
 
         public static implicit operator SourceGroup(string s) {
-            return new() {
-                RawValue = s
-            };
+            return new SourceGroup(s);
         }
 
         public override string ToString() {

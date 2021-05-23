@@ -30,7 +30,7 @@ namespace BuildEngine {
             CopyAllFiltered(sourceDirectory, new DirectoryInfo(targetDirectory), fileFilter);
         }
 
-        private static void CopyAll(DirectoryInfo source, DirectoryInfo target, string filter) {
+        private static void CopyAll(DirectoryInfo source, DirectoryInfo target, string? filter) {
             Directory.CreateDirectory(target.FullName);
 
             // Copy each file into the new directory.
