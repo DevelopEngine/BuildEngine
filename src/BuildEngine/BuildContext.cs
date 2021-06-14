@@ -9,9 +9,6 @@ using Microsoft.Extensions.Logging;
 namespace BuildEngine {
     public class BuildContext : IBuildContext
     {
-        [Obsolete("Will be removed in future releases", false)]
-        public DirectoryInfo WorkingDirectory => _workingDirectory;
-
         private readonly DirectoryInfo _workingDirectory;
         private readonly ILogger? _logger;
         public IBuildRunner? BuildRunner { get; }
