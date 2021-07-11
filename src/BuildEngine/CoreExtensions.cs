@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace BuildEngine {
     public static class CoreExtensions {
@@ -68,6 +69,18 @@ namespace BuildEngine {
             return removeChars
                 ? Path.GetInvalidFileNameChars().Aggregate(input, (current, c) => current.IndexOf(c) == -1 ? current : current.Remove(current.IndexOf(c), 1))
                 : Path.GetInvalidFileNameChars().Aggregate(input, (current, c) => current.Replace(c, '-'));
+        }
+        
+        internal static string CalculateMD5(this FileInfo fi)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = fi.OpenRead())
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
         }
     }
 }

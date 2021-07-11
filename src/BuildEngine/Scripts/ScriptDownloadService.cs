@@ -5,23 +5,23 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace BuildEngine.Scripts {
-    public abstract class ScriptDownloadBase
+    public class ScriptDownloadService
     {
         public string? UserAgent { get; protected set; }
         protected string ScriptFilePath { get; }
-        protected readonly ILogger<IScriptService> Logger;
-        private IAppInfoProvider? InfoProvider { get; set; } = new EntryAppInfoProvider();
+        protected readonly ILogger<IScriptService>? Logger;
+        private IAppInfoProvider? InfoProvider { get; init; } = new EntryAppInfoProvider();
+        public RemoteScript Script { get; }
 
-        protected string ScriptFileName { get; }
-
-        protected ScriptDownloadBase(string fileName, ILogger<IScriptService> logger)
+        public ScriptDownloadService(RemoteScript script, ILogger<IScriptService>? logger = null)
         {
-            ScriptFileName = fileName;
-            ScriptFilePath = Path.Combine(GetTempPath(), ScriptFileName);
+            // ScriptFileName = script.FileName;
+            Script = script;
+            ScriptFilePath = Path.Combine(GetTempPath(), script.FileName);
             Logger = logger;
         }
 
-        protected ScriptDownloadBase(string fileName, ILogger<IScriptService> logger, IAppInfoProvider infoProvider) : this(fileName, logger)
+        public ScriptDownloadService(RemoteScript script, ILogger<IScriptService> logger, IAppInfoProvider infoProvider) : this(script, logger)
         {
             InfoProvider = infoProvider;
         }
@@ -50,13 +50,31 @@ namespace BuildEngine.Scripts {
 
         protected async Task DownloadScript(string url)
         {
-            Logger.LogDebug($"Downloading new build file: '{ScriptFileName}'");
+            Logger?.LogDebug($"Downloading new build file: '{Script.FileName}'");
             using var client = GetClient();
             var response = await client.GetAsync(url);
             await using var fs = new FileStream(
                 ScriptFilePath,
                 FileMode.Create);
             await response.Content.CopyToAsync(fs);
+        }
+        
+        public virtual async Task<string> GetScriptPath() {
+            
+            var fi = new FileInfo(ScriptFilePath);
+            if (fi.Exists && fi.Length > 0 && (string.IsNullOrWhiteSpace(Script?.FileSourceHash) || fi.CalculateMD5() == Script.FileSourceHash)) {
+                //check if it matches
+                return fi.FullName;
+            } else {
+                if (Script.Confirmation != null) {
+                    var result = Script.Confirmation();
+                    if (!result) {
+                        throw new Exception("Aborted download of script file!");
+                    }
+                }
+                await DownloadScript(Script.FileSourceUri);
+                return fi.FullName;
+            }
         }
 
         private HttpClient GetClient()

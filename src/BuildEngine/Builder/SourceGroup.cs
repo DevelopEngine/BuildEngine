@@ -1,4 +1,4 @@
-﻿namespace BuildEngine {
+﻿namespace BuildEngine.Builder {
     public class SourceGroup {
         public SourceGroup(string raw) {
             RawValue = raw;
