@@ -3,7 +3,7 @@ using System.IO;
 
 namespace BuildEngine.Builder {
     public abstract class BuildInstruction {
-        public virtual string? TargetPath {get; init;}
+        public virtual string? TargetPath {get; set;}
 
         // public string PackGroup {get;set;}
         public SourceGroup? SourceGroup {get;set;}
