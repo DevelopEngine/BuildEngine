@@ -35,6 +35,22 @@ namespace BuildEngine {
             return File.Exists(targetFilePath);
         }
 
+        public FileInfo? GetFile(string path) {
+            var srcPath = Path.Join(WorkingDirectory.FullName, path);
+            try {
+                var fi = new FileInfo(srcPath);
+                return fi.Exists ? fi : null;
+            }
+            catch {
+                return null;
+            }
+        }
+
+        public FileStream? OpenFile(string path) {
+            var fi = GetFile(path);
+            return fi?.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+        }
+
         public bool AddFolder(string relPath, DirectoryInfo sourceDir, Func<FileInfo, bool> fileFilter) {
             var targetPath = Path.Combine(WorkingDirectory.FullName, relPath);
             sourceDir.CopyTo(targetPath, fileFilter);
